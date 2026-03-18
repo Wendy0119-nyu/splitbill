@@ -1,640 +1,660 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>分账小助手</title>
+<title>Split Bill</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #f5f2ee;
-    --surface: #ffffff;
-    --surface2: #f0ece6;
-    --border: #e2ddd7;
-    --border2: #cdc8c0;
-    --text: #1a1714;
-    --text2: #6b6560;
-    --text3: #9e9892;
-    --accent: #c8622a;
-    --accent-light: #f5ede6;
-    --accent-dark: #a04e1f;
-    --green: #2a7a4a;
-    --green-light: #e6f3ec;
-    --red: #b93333;
-    --red-light: #faeaea;
-    --radius: 12px;
-    --radius-sm: 8px;
-    --radius-pill: 999px;
+    --bg: #f5f2ee; --surface: #ffffff; --surface2: #f0ece6;
+    --border: #e2ddd7; --border2: #cdc8c0; --text: #1a1714;
+    --text2: #6b6560; --text3: #9e9892; --accent: #c8622a;
+    --accent-light: #f5ede6; --accent-dark: #a04e1f;
+    --green: #2a7a4a; --green-light: #e6f3ec; --red: #b93333; --red-light: #faeaea;
+    --radius: 12px; --radius-sm: 8px; --radius-pill: 999px;
     --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
     --shadow-md: 0 2px 8px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.06);
   }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  /* Header */
-  .header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 20px 24px 0;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 1px 0 var(--border);
-  }
-  .header-top {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-  }
-  .logo {
-    width: 36px; height: 36px;
-    background: var(--accent);
-    border-radius: var(--radius-sm);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-  .header-title { font-size: 18px; font-weight: 600; color: var(--text); }
-  .header-sub { font-size: 13px; color: var(--text3); margin-top: 1px; }
-
-  /* Currency toggle */
-  .currency-toggle {
-    display: flex; gap: 4px; margin-left: auto;
-    background: var(--surface2); border-radius: var(--radius-sm);
-    padding: 3px; border: 1px solid var(--border);
-  }
-  .currency-btn {
-    padding: 4px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;
-    cursor: pointer; border: none; background: transparent; color: var(--text3);
-    font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-  }
-  .currency-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
-  /* Tabs */
-  .tabs { display: flex; gap: 0; }
-  .tab {
-    padding: 10px 20px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text2);
-    cursor: pointer;
-    border: none;
-    background: none;
-    border-bottom: 2px solid transparent;
-    transition: color 0.15s, border-color 0.15s;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.01em;
-  }
+  /* HEADER */
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px 0; position: sticky; top: 0; z-index: 10; }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .logo { width: 34px; height: 34px; background: var(--accent); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; cursor: pointer; }
+  .header-title { font-size: 17px; font-weight: 600; }
+  .header-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
+  .header-controls { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; align-items: center; }
+  .toggle-group { display: flex; gap: 3px; background: var(--surface2); border-radius: var(--radius-sm); padding: 3px; border: 1px solid var(--border); }
+  .toggle-btn { padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--text3); font-family: 'DM Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .toggle-btn.active { background: var(--surface); color: var(--accent); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .tabs { display: flex; }
+  .tab { padding: 10px 18px; font-size: 14px; font-weight: 500; color: var(--text2); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; font-family: 'DM Sans', sans-serif; transition: color 0.15s, border-color 0.15s; }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* Main content */
+  /* MAIN */
   .main { max-width: 560px; margin: 0 auto; padding: 28px 20px 60px; }
-
-  /* Section */
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text3);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
   .section-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
   .section-sub { font-size: 14px; color: var(--text2); margin-bottom: 20px; }
-
-  /* Cards */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
-  .card + .card { margin-top: 12px; }
-
-  /* Form elements */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
   .form-group { margin-bottom: 16px; }
   .form-label { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; display: block; }
   .input-row { display: flex; gap: 8px; }
-  input[type=text], input[type=number], select {
-    width: 100%;
-    height: 40px;
-    padding: 0 12px;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif;
-    border: 1px solid var(--border2);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-  }
-  input:focus, select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(200,98,42,0.12);
-  }
+  input[type=text], input[type=number], select, input[type=search] { width: 100%; height: 40px; padding: 0 12px; font-size: 14px; font-family: 'DM Sans', sans-serif; border: 1px solid var(--border2); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(200,98,42,0.12); }
   input::placeholder { color: var(--text3); }
-
-  /* Buttons */
-  .btn {
-    height: 40px;
-    padding: 0 18px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: 'DM Sans', sans-serif;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    border: 1px solid transparent;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn { height: 40px; padding: 0 18px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent-dark); }
   .btn-primary:active { transform: scale(0.98); }
-  .btn-ghost {
-    background: transparent;
-    color: var(--text2);
-    border-color: var(--border2);
-  }
-  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
-  .btn-danger-sm {
-    height: 28px; padding: 0 10px; font-size: 12px;
-    background: transparent; color: var(--red); border: 1px solid transparent;
-    border-radius: var(--radius-sm); cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: all 0.12s;
-  }
-  .btn-danger-sm:hover { background: var(--red-light); border-color: #e8b3b3; }
-  .btn-next {
-    width: 100%; height: 44px; font-size: 15px; font-weight: 500;
-    background: var(--accent); color: #fff; border: none;
-    border-radius: var(--radius); cursor: pointer; font-family: 'DM Sans', sans-serif;
-    transition: all 0.15s; margin-top: 8px;
-  }
+  .btn-ghost { background: transparent; color: var(--text2); border-color: var(--border2); }
+  .btn-ghost:hover { background: var(--surface2); }
+  .btn-danger-sm { height: 28px; padding: 0 10px; font-size: 12px; background: transparent; color: var(--red); border: 1px solid transparent; border-radius: var(--radius-sm); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.12s; }
+  .btn-danger-sm:hover { background: var(--red-light); }
+  .btn-next { width: 100%; height: 44px; font-size: 15px; font-weight: 500; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s; margin-top: 8px; }
   .btn-next:hover { background: var(--accent-dark); }
 
-  /* People tags */
+  /* PEOPLE */
   .people-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .person-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--accent-light); color: var(--accent-dark);
-    border: 1px solid #e8c4ae; border-radius: var(--radius-pill);
-    padding: 5px 8px 5px 12px; font-size: 13px; font-weight: 500;
-  }
-  .person-tag-remove {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: rgba(160,78,31,0.15); border: none; cursor: pointer;
-    color: var(--accent-dark); font-size: 13px; line-height: 1;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.12s;
-  }
+  .person-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-light); color: var(--accent-dark); border: 1px solid #e8c4ae; border-radius: var(--radius-pill); padding: 5px 8px 5px 12px; font-size: 13px; font-weight: 500; }
+  .person-tag-remove { width: 18px; height: 18px; border-radius: 50%; background: rgba(160,78,31,0.15); border: none; cursor: pointer; color: var(--accent-dark); font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background 0.12s; }
   .person-tag-remove:hover { background: rgba(160,78,31,0.3); }
 
-  /* Chips */
+  /* CHIPS */
   .chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .chip {
-    padding: 7px 16px; border-radius: var(--radius-pill);
-    font-size: 13px; font-weight: 500; cursor: pointer;
-    border: 1.5px solid var(--border2);
-    background: var(--surface); color: var(--text2);
-    transition: all 0.15s; user-select: none;
-    font-family: 'DM Sans', sans-serif;
-  }
+  .chip { padding: 7px 16px; border-radius: var(--radius-pill); font-size: 13px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border2); background: var(--surface); color: var(--text2); transition: all 0.15s; user-select: none; font-family: 'DM Sans', sans-serif; }
   .chip:hover { border-color: var(--accent); color: var(--accent); }
-  .chip.on {
-    background: var(--accent); color: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 2px 8px rgba(200,98,42,0.3);
-  }
+  .chip.on { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 2px 8px rgba(200,98,42,0.3); }
   .chip-hint { font-size: 12px; color: var(--text3); margin-bottom: 10px; }
 
-  /* Expense list */
-  .expense-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 18px;
-    box-shadow: var(--shadow); margin-bottom: 10px;
-    display: flex; justify-content: space-between; align-items: flex-start;
-    transition: box-shadow 0.15s;
-  }
+  /* EXPENSES */
+  .expense-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; transition: box-shadow 0.15s; }
   .expense-card:hover { box-shadow: var(--shadow-md); }
   .expense-desc { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
   .expense-meta { font-size: 12px; color: var(--text2); }
-  .expense-payer {
-    display: inline-block; background: var(--accent-light); color: var(--accent-dark);
-    border-radius: var(--radius-pill); padding: 1px 8px; font-size: 11px; font-weight: 600;
-    margin-right: 4px;
-  }
-  .expense-amount { font-size: 20px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--text); }
+  .expense-payer { display: inline-block; background: var(--accent-light); color: var(--accent-dark); border-radius: var(--radius-pill); padding: 1px 8px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+  .expense-amount { font-size: 20px; font-weight: 600; font-family: 'DM Mono', monospace; }
   .expense-right { display: flex; align-items: center; gap: 10px; }
-
-  /* Empty */
-  .empty {
-    text-align: center; padding: 40px 20px;
-    color: var(--text3); font-size: 14px;
-  }
+  .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
   .empty-icon { font-size: 32px; margin-bottom: 8px; }
 
-  /* Metrics */
+  /* SETTLE */
   .metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
-  .metric-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px;
-    box-shadow: var(--shadow);
-  }
+  .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
   .metric-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
   .metric-value { font-size: 22px; font-weight: 600; font-family: 'DM Mono', monospace; }
-
-  /* Balance list */
-  .balance-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 0; border-bottom: 1px solid var(--border);
-  }
+  .balance-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
   .balance-item:last-child { border-bottom: none; }
   .balance-name { font-size: 14px; font-weight: 500; }
   .balance-paid { font-size: 12px; color: var(--text3); margin-top: 2px; }
   .balance-val { font-size: 14px; font-weight: 600; font-family: 'DM Mono', monospace; }
-  .pos { color: var(--green); }
-  .neg { color: var(--red); }
-  .zero { color: var(--text3); }
-  .bal-pill {
-    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill);
-    margin-left: 8px;
-  }
-  .bal-pill.pos { background: var(--green-light); color: var(--green); }
-  .bal-pill.neg { background: var(--red-light); color: var(--red); }
-  .bal-pill.zero { background: var(--surface2); color: var(--text3); }
-
-  /* Transfer */
-  .transfer-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 16px 20px;
-    box-shadow: var(--shadow); margin-bottom: 10px;
-    display: flex; justify-content: space-between; align-items: center;
-    transition: box-shadow 0.15s;
-  }
+  .pos { color: var(--green); } .neg { color: var(--red); } .zero { color: var(--text3); }
+  .transfer-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: box-shadow 0.15s; }
   .transfer-card:hover { box-shadow: var(--shadow-md); }
-  .transfer-names { font-size: 15px; }
-  .transfer-from { font-weight: 600; }
-  .transfer-arrow { color: var(--text3); margin: 0 8px; }
-  .transfer-to { font-weight: 600; color: var(--accent); }
+  .transfer-from { font-weight: 600; } .transfer-arrow { color: var(--text3); margin: 0 8px; } .transfer-to { font-weight: 600; color: var(--accent); }
   .transfer-amount { font-size: 20px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--green); }
-
-  /* Divider */
   .divider { height: 1px; background: var(--border); margin: 24px 0; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-light); color: var(--accent-dark); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sec-heading { font-size: 13px; font-weight: 600; color: #6b6560; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
 
-  /* Step nav */
-  .step-indicator {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: var(--text3); margin-bottom: 20px;
-  }
-  .step-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: var(--border2);
-    transition: background 0.2s;
-  }
-  .step-dot.active { background: var(--accent); }
+  /* HISTORY */
+  .history-search-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+  .session-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; box-shadow: var(--shadow); margin-bottom: 10px; cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s; }
+  .session-card:hover { box-shadow: var(--shadow-md); border-color: var(--border2); }
+  .session-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .session-meta { font-size: 12px; color: var(--text2); display: flex; gap: 12px; flex-wrap: wrap; }
+  .session-meta span { display: flex; align-items: center; gap: 4px; }
+  .session-actions { display: flex; gap: 6px; margin-top: 10px; }
+  .tag-people { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .tag-mini { background: var(--accent-light); color: var(--accent-dark); border-radius: var(--radius-pill); padding: 2px 8px; font-size: 11px; font-weight: 600; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 24px; max-width: 480px; width: 100%; box-shadow: var(--shadow-md); }
+  .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+  .new-session-btn { width: 100%; height: 44px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s; margin-bottom: 16px; }
+  .new-session-btn:hover { background: var(--accent-dark); }
+  .save-banner { background: var(--green-light); border: 1px solid #b3dcc4; border-radius: var(--radius-sm); padding: 10px 14px; font-size: 13px; color: var(--green); display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
 
-  /* Avatar */
-  .avatar {
-    width: 32px; height: 32px; border-radius: 50%;
-    background: var(--accent-light); color: var(--accent-dark);
-    font-size: 13px; font-weight: 700;
-    display: inline-flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-
-  @media (max-width: 480px) {
-    .main { padding: 20px 16px 60px; }
-    .metric-grid { grid-template-columns: repeat(2, 1fr); }
-    .header { padding: 16px 16px 0; }
-  }
+  @media (max-width: 480px) { .main { padding: 20px 16px 60px; } .header { padding: 14px 14px 0; } .header-controls { width: 100%; } }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-top">
-    <div class="logo">🧾</div>
+    <div class="logo" onclick="switchTab('history')" title="History">🧾</div>
     <div>
-      <div class="header-title">分账小助手</div>
-      <div class="header-sub">轻松搞定朋友间的账单</div>
+      <div class="header-title" id="h-title">Split Bill</div>
+      <div class="header-sub" id="h-sub">Track and settle group expenses</div>
     </div>
-    <div class="currency-toggle">
-      <button class="currency-btn" id="btn-cny" onclick="setCurrency('CNY')">¥ 人民币</button>
-      <button class="currency-btn active" id="btn-usd" onclick="setCurrency('USD')">$ 美元</button>
+    <div class="header-controls">
+      <div class="toggle-group">
+        <button class="toggle-btn active" id="lang-en" onclick="setLang('en')">EN</button>
+        <button class="toggle-btn" id="lang-zh" onclick="setLang('zh')">中文</button>
+        <button class="toggle-btn" id="lang-es" onclick="setLang('es')">ES</button>
+      </div>
+      <div class="toggle-group">
+        <button class="toggle-btn" id="btn-cny" onclick="setCurrency('CNY')">¥</button>
+        <button class="toggle-btn active" id="btn-usd" onclick="setCurrency('USD')">$</button>
+        <button class="toggle-btn" id="btn-eur" onclick="setCurrency('EUR')">€</button>
+      </div>
     </div>
   </div>
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('people')">① 成员</button>
-    <button class="tab" onclick="switchTab('expenses')">② 账单</button>
-    <button class="tab" onclick="switchTab('settle')">③ 结算</button>
+    <button class="tab" id="tab-btn-history" onclick="switchTab('history')">📋 <span id="tab0-label">History</span></button>
+    <button class="tab active" id="tab-btn-people" onclick="switchTab('people')">① <span id="tab1-label">Members</span></button>
+    <button class="tab" id="tab-btn-expenses" onclick="switchTab('expenses')">② <span id="tab2-label">Expenses</span></button>
+    <button class="tab" id="tab-btn-settle" onclick="switchTab('settle')">③ <span id="tab3-label">Settle Up</span></button>
   </div>
 </div>
 
 <div class="main">
 
+  <!-- TAB: HISTORY -->
+  <div id="tab-history" style="display:none">
+    <div class="section-label" id="hist-label">History</div>
+    <div class="section-title" id="hist-title">Past Sessions</div>
+    <div class="section-sub" id="hist-sub">Tap a session to view or resume it</div>
+
+    <button class="new-session-btn" onclick="newSession()">
+      <span style="font-size:18px">+</span> <span id="btn-newsession">New Session</span>
+    </button>
+
+    <div class="history-search-row">
+      <input type="search" id="hist-search" placeholder="Search sessions..." oninput="renderHistory()" />
+    </div>
+
+    <div id="history-list"></div>
+  </div>
+
   <!-- TAB: PEOPLE -->
   <div id="tab-people">
-    <div class="section-label">第一步</div>
-    <div class="section-title">都有谁参与？</div>
-    <div class="section-sub">把所有要一起分账的朋友加进来</div>
-
+    <div id="save-banner" class="save-banner" style="display:none">
+      ✅ <span id="save-banner-text">Session auto-saved</span>
+    </div>
+    <div class="section-label" id="step1-label">Step 1</div>
+    <div class="section-title" id="step1-title">Who's joining?</div>
+    <div class="section-sub" id="step1-sub">Add everyone splitting the bill</div>
     <div class="card">
       <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">添加成员</label>
+        <label class="form-label" id="label-addmember">Add Member</label>
         <div class="input-row">
-          <input type="text" id="pinput" placeholder="输入名字，按 Enter 添加" onkeydown="if(event.key==='Enter')addPerson()" />
-          <button class="btn btn-primary" onclick="addPerson()" style="flex-shrink:0">+ 添加</button>
+          <input type="text" id="pinput" onkeydown="if(event.key==='Enter')addPerson()" />
+          <button class="btn btn-primary" onclick="addPerson()" style="flex-shrink:0" id="btn-add">+ Add</button>
         </div>
       </div>
       <div id="plist" class="people-tags"></div>
     </div>
-
     <div id="people-count" style="font-size:13px;color:#9e9892;margin:12px 0 8px;text-align:center"></div>
-    <button class="btn-next" onclick="switchTab('expenses')">下一步：记录账单 →</button>
+    <button class="btn-next" onclick="switchTab('expenses')" id="btn-next1">Next: Add Expenses →</button>
   </div>
 
   <!-- TAB: EXPENSES -->
   <div id="tab-expenses" style="display:none">
-    <div class="section-label">第二步</div>
-    <div class="section-title">记录每笔支出</div>
-    <div class="section-sub">谁付了多少钱，平摊给哪些人</div>
-
+    <div class="section-label" id="step2-label">Step 2</div>
+    <div class="section-title" id="step2-title">Record Expenses</div>
+    <div class="section-sub" id="step2-sub">Who paid what, and who shares it</div>
     <div class="card" style="margin-bottom:20px">
       <div class="form-group">
-        <label class="form-label">描述</label>
-        <input type="text" id="edesc" placeholder="如：晚饭、打车、奶茶" />
+        <label class="form-label" id="label-desc">Description</label>
+        <input type="text" id="edesc" />
       </div>
       <div class="form-group">
-        <label class="form-label">金额</label>
+        <label class="form-label" id="label-amount">Amount</label>
         <input type="number" id="eamt" placeholder="0.00" min="0" step="0.01" />
       </div>
       <div class="form-group">
-        <label class="form-label">付款人</label>
+        <label class="form-label" id="label-paidby">Paid By</label>
         <select id="epayer"></select>
       </div>
       <div class="form-group" style="margin-bottom:0">
-        <label class="form-label">平摊给</label>
-        <div class="chip-hint">点击选中，再点取消（默认全选）</div>
+        <label class="form-label" id="label-splitwith">Split With</label>
+        <div class="chip-hint" id="chip-hint">Tap to select, tap again to deselect (default: everyone)</div>
         <div id="echips" class="chips"></div>
       </div>
     </div>
-
-    <button class="btn btn-primary" style="width:100%;justify-content:center;height:44px;font-size:15px;border-radius:12px" onclick="addExpense()">
-      + 记录这笔账单
-    </button>
-
+    <button class="btn btn-primary" style="width:100%;justify-content:center;height:44px;font-size:15px;border-radius:12px" onclick="addExpense()" id="btn-record">+ Record Expense</button>
     <div class="divider"></div>
-
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div style="font-size:15px;font-weight:600">已记录账单</div>
+      <div style="font-size:15px;font-weight:600" id="label-recorded">Recorded Expenses</div>
       <div id="exp-count" style="font-size:13px;color:#9e9892"></div>
     </div>
     <div id="elist"></div>
-
-    <button class="btn-next" onclick="switchTab('settle')" style="margin-top:16px">查看结算结果 →</button>
+    <button class="btn-next" onclick="switchTab('settle')" style="margin-top:16px" id="btn-next2">View Settlement →</button>
   </div>
 
   <!-- TAB: SETTLE -->
   <div id="tab-settle" style="display:none">
-    <div class="section-label">第三步</div>
-    <div class="section-title">结算结果</div>
-    <div class="section-sub">谁转多少给谁，一目了然</div>
-
+    <div class="section-label" id="step3-label">Step 3</div>
+    <div class="section-title" id="step3-title">Settlement</div>
+    <div class="section-sub" id="step3-sub">Who pays whom — simplified</div>
+    <div style="display:flex;gap:8px;margin-bottom:20px">
+      <button class="btn btn-primary" onclick="saveCurrentSession(true)" id="btn-save" style="flex:1;justify-content:center">💾 <span id="btn-save-label">Save Session</span></button>
+      <button class="btn btn-ghost" onclick="newSession()" id="btn-new" style="flex:1;justify-content:center">+ <span id="btn-new-label">New Session</span></button>
+    </div>
     <div id="sgrid" class="metric-grid"></div>
-
-    <div style="font-size:13px;font-weight:600;color:#6b6560;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">每人账单明细</div>
+    <div class="sec-heading" id="heading-balances">Balances</div>
     <div class="card" style="margin-bottom:20px" id="sbal"></div>
-
-    <div style="font-size:13px;font-weight:600;color:#6b6560;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">转账方案</div>
+    <div class="sec-heading" id="heading-transfers">Transfer Plan</div>
     <div id="stxn"></div>
   </div>
 
 </div>
 
-<script>
-var people = [];
-var expenses = [];
-var splitSel = [];
-var currency = 'USD';
+<!-- Name modal for session -->
+<div id="name-modal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Name this session</div>
+    <div class="modal-sub" id="modal-sub">Give it a name so you can find it later (e.g. "Tokyo Trip", "Friday Dinner")</div>
+    <input type="text" id="session-name-input" placeholder="e.g. Friday Dinner" onkeydown="if(event.key==='Enter')confirmSave()" />
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()" id="modal-cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSave()" id="modal-confirm">Save</button>
+    </div>
+  </div>
+</div>
 
-function sym() { return currency === 'CNY' ? '¥' : '$'; }
+<script>
+var people = [], expenses = [], splitSel = [];
+var currency = 'USD', lang = 'en';
+var currentSessionId = null;
+var pendingSaveCallback = null;
+
+var T = {
+  en: {
+    title:'Split Bill', sub:'Track and settle group expenses',
+    tab0:'History', tab1:'Members', tab2:'Expenses', tab3:'Settle Up',
+    step1label:'Step 1', step1title:"Who's joining?", step1sub:'Add everyone splitting the bill',
+    step2label:'Step 2', step2title:'Record Expenses', step2sub:'Who paid what, and who shares it',
+    step3label:'Step 3', step3title:'Settlement', step3sub:'Who pays whom — simplified',
+    addmember:'Add Member', pinput:'Enter name, press Enter',
+    btnadd:'+ Add', btnnext1:'Next: Add Expenses →', btnnext2:'View Settlement →',
+    descLabel:'Description', descPlaceholder:'e.g. Dinner, Taxi, Drinks',
+    amountLabel:'Amount', paidbyLabel:'Paid By', splitwithLabel:'Split With',
+    chiphint:'Tap to select, tap again to deselect (default: everyone)',
+    btnrecord:'+ Record Expense', recordedLabel:'Recorded Expenses',
+    btndelete:'Delete', paidword:'paid', splitword:'split with',
+    headingBal:'Balances', headingTxn:'Transfer Plan',
+    metricTotal:'Total Spent', metricAvg:'Per Person', metricExp:'Expenses', metricPeople:'People',
+    overpaid:'overpaid', owes:'owes', balanced:'settled',
+    actualPaid:'paid', noExpenses:'No expenses yet — add the first one!',
+    noSettle:'Nothing to settle — everyone is balanced! ✅', noMembers:'Add members first',
+    histLabel:'History', histTitle:'Past Sessions', histSub:'Tap a session to view or resume it',
+    btnNewSession:'New Session', btnSave:'Save Session', btnNew:'New Session',
+    modalTitle:'Name this session', modalSub:'Give it a name so you can find it later',
+    modalCancel:'Cancel', modalConfirm:'Save',
+    searchPlaceholder:'Search sessions...',
+    btnResume:'Resume', btnDelete:'Delete',
+    noHistory:'No saved sessions yet', savedBanner:'Session saved!',
+    countPeople:function(n){return n+(n===1?' person':' people');},
+    countExp:function(n){return n+(n===1?' expense':' expenses');}
+  },
+  zh: {
+    title:'分账小助手', sub:'轻松搞定朋友间的账单',
+    tab0:'历史', tab1:'成员', tab2:'账单', tab3:'结算',
+    step1label:'第一步', step1title:'都有谁参与？', step1sub:'把所有要一起分账的朋友加进来',
+    step2label:'第二步', step2title:'记录每笔支出', step2sub:'谁付了多少钱，平摊给哪些人',
+    step3label:'第三步', step3title:'结算结果', step3sub:'谁转多少给谁，一目了然',
+    addmember:'添加成员', pinput:'输入名字，按 Enter 添加',
+    btnadd:'+ 添加', btnnext1:'下一步：记录账单 →', btnnext2:'查看结算结果 →',
+    descLabel:'描述', descPlaceholder:'如：晚饭、打车、奶茶',
+    amountLabel:'金额', paidbyLabel:'付款人', splitwithLabel:'平摊给',
+    chiphint:'点击选中，再点取消（默认全选）',
+    btnrecord:'+ 记录这笔账单', recordedLabel:'已记录账单',
+    btndelete:'删除', paidword:'付款', splitword:'平摊给',
+    headingBal:'每人余额', headingTxn:'转账方案',
+    metricTotal:'总支出', metricAvg:'人均应付', metricExp:'账单笔数', metricPeople:'参与人数',
+    overpaid:'多付了', owes:'还欠', balanced:'已平衡',
+    actualPaid:'实付', noExpenses:'还没有账单，添加第一笔吧',
+    noSettle:'无需转账，大家已经平衡了 ✅', noMembers:'请先添加成员',
+    histLabel:'历史记录', histTitle:'过去的账单', histSub:'点击查看或继续编辑',
+    btnNewSession:'新建账单', btnSave:'保存账单', btnNew:'新建账单',
+    modalTitle:'给这次账单起个名字', modalSub:'方便以后查找，如"东京旅行"、"周五聚餐"',
+    modalCancel:'取消', modalConfirm:'保存',
+    searchPlaceholder:'搜索历史记录...',
+    btnResume:'继续编辑', btnDelete:'删除',
+    noHistory:'还没有保存过账单', savedBanner:'账单已保存！',
+    countPeople:function(n){return '共 '+n+' 人';},
+    countExp:function(n){return n+' 笔';}
+  },
+  es: {
+    title:'Dividir Cuenta', sub:'Registra y liquida gastos en grupo',
+    tab0:'Historial', tab1:'Personas', tab2:'Gastos', tab3:'Liquidar',
+    step1label:'Paso 1', step1title:'¿Quiénes participan?', step1sub:'Agrega a todos los que van a dividir',
+    step2label:'Paso 2', step2title:'Registrar Gastos', step2sub:'Quién pagó qué y cómo se divide',
+    step3label:'Paso 3', step3title:'Liquidación', step3sub:'Quién le paga a quién — simplificado',
+    addmember:'Agregar Persona', pinput:'Escribe un nombre, pulsa Enter',
+    btnadd:'+ Agregar', btnnext1:'Siguiente: Gastos →', btnnext2:'Ver Liquidación →',
+    descLabel:'Descripción', descPlaceholder:'ej. Cena, Taxi, Bebidas',
+    amountLabel:'Monto', paidbyLabel:'Pagado Por', splitwithLabel:'Dividir Con',
+    chiphint:'Toca para seleccionar, toca de nuevo para deseleccionar (por defecto: todos)',
+    btnrecord:'+ Registrar Gasto', recordedLabel:'Gastos Registrados',
+    btndelete:'Borrar', paidword:'pagó', splitword:'dividido con',
+    headingBal:'Balances', headingTxn:'Plan de Transferencias',
+    metricTotal:'Total Gastado', metricAvg:'Por Persona', metricExp:'Gastos', metricPeople:'Personas',
+    overpaid:'pagó de más', owes:'debe', balanced:'equilibrado',
+    actualPaid:'pagó', noExpenses:'Sin gastos aún — ¡agrega el primero!',
+    noSettle:'¡Nada que liquidar — todo equilibrado! ✅', noMembers:'Primero agrega personas',
+    histLabel:'Historial', histTitle:'Sesiones Pasadas', histSub:'Toca una sesión para verla o reanudarla',
+    btnNewSession:'Nueva Sesión', btnSave:'Guardar Sesión', btnNew:'Nueva Sesión',
+    modalTitle:'Nombra esta sesión', modalSub:'Dale un nombre para encontrarla después',
+    modalCancel:'Cancelar', modalConfirm:'Guardar',
+    searchPlaceholder:'Buscar sesiones...',
+    btnResume:'Reanudar', btnDelete:'Borrar',
+    noHistory:'Aún no hay sesiones guardadas', savedBanner:'¡Sesión guardada!',
+    countPeople:function(n){return n+(n===1?' persona':' personas');},
+    countExp:function(n){return n+(n===1?' gasto':' gastos');}
+  }
+};
+
+function t(key) { return T[lang][key] || key; }
+function sym() { return currency==='CNY'?'¥':currency==='EUR'?'€':'$'; }
+
+/* ---- LANGUAGE & CURRENCY ---- */
+function setLang(l) {
+  lang = l;
+  ['en','zh','es'].forEach(function(x){ document.getElementById('lang-'+x).classList.toggle('active',x===l); });
+  applyLang(); renderPeople(); renderExpList();
+  if(document.getElementById('tab-settle').style.display!=='none') renderSettle();
+  if(document.getElementById('tab-history').style.display!=='none') renderHistory();
+}
+
+function applyLang() {
+  var map = {
+    'h-title':'title','h-sub':'sub',
+    'tab0-label':'tab0','tab1-label':'tab1','tab2-label':'tab2','tab3-label':'tab3',
+    'step1-label':'step1label','step1-title':'step1title','step1-sub':'step1sub',
+    'step2-label':'step2label','step2-title':'step2title','step2-sub':'step2sub',
+    'step3-label':'step3label','step3-title':'step3title','step3-sub':'step3sub',
+    'label-addmember':'addmember','btn-add':'btnadd',
+    'btn-next1':'btnnext1','btn-next2':'btnnext2',
+    'label-desc':'descLabel','label-amount':'amountLabel',
+    'label-paidby':'paidbyLabel','label-splitwith':'splitwithLabel',
+    'chip-hint':'chiphint','btn-record':'btnrecord','label-recorded':'recordedLabel',
+    'heading-balances':'headingBal','heading-transfers':'headingTxn',
+    'hist-label':'histLabel','hist-title':'histTitle','hist-sub':'histSub',
+    'btn-newsession':'btnNewSession','btn-save-label':'btnSave','btn-new-label':'btnNew',
+    'modal-title':'modalTitle','modal-sub':'modalSub',
+    'modal-cancel':'modalCancel','modal-confirm':'modalConfirm'
+  };
+  for(var id in map){ var el=document.getElementById(id); if(el) el.textContent=t(map[id]); }
+  document.getElementById('pinput').placeholder = t('pinput');
+  document.getElementById('edesc').placeholder = t('descPlaceholder');
+  document.getElementById('hist-search').placeholder = t('searchPlaceholder');
+  document.title = t('title');
+}
 
 function setCurrency(c) {
   currency = c;
-  document.getElementById('btn-cny').classList.toggle('active', c === 'CNY');
-  document.getElementById('btn-usd').classList.toggle('active', c === 'USD');
+  ['CNY','USD','EUR'].forEach(function(x){ document.getElementById('btn-'+x.toLowerCase()).classList.toggle('active',x===c); });
   renderExpList();
-  if (document.getElementById('tab-settle').style.display !== 'none') renderSettle();
+  if(document.getElementById('tab-settle').style.display!=='none') renderSettle();
 }
 
-function switchTab(t) {
-  ['people','expenses','settle'].forEach(function(id, i) {
-    document.getElementById('tab-'+id).style.display = id===t ? 'block' : 'none';
-    document.querySelectorAll('.tab')[i].classList.toggle('active', id===t);
+/* ---- TABS ---- */
+function switchTab(tab) {
+  ['history','people','expenses','settle'].forEach(function(id,i){
+    document.getElementById('tab-'+id).style.display = id===tab?'block':'none';
+    document.querySelectorAll('.tab')[i].classList.toggle('active',id===tab);
   });
-  if (t==='expenses') refreshExpUI();
-  if (t==='settle') renderSettle();
+  if(tab==='expenses') refreshExpUI();
+  if(tab==='settle') renderSettle();
+  if(tab==='history') renderHistory();
 }
 
+/* ---- PEOPLE ---- */
 function addPerson() {
-  var inp = document.getElementById('pinput');
-  var name = inp.value.trim();
-  if (!name || people.indexOf(name) >= 0) { inp.value = ''; return; }
-  people.push(name);
-  inp.value = '';
-  renderPeople();
+  var inp=document.getElementById('pinput'), name=inp.value.trim();
+  if(!name||people.indexOf(name)>=0){inp.value='';return;}
+  people.push(name); inp.value=''; renderPeople(); autoSave();
 }
-
 function removePerson(i) {
-  var name = people[i];
-  people.splice(i, 1);
-  expenses = expenses.filter(function(e) { return e.payer !== name; });
-  renderPeople();
+  var name=people[i]; people.splice(i,1);
+  expenses=expenses.filter(function(e){return e.payer!==name;});
+  renderPeople(); autoSave();
 }
-
 function renderPeople() {
-  document.getElementById('plist').innerHTML = people.map(function(p, i) {
-    var initials = p.slice(0,1).toUpperCase();
+  document.getElementById('plist').innerHTML=people.map(function(p,i){
+    var init=p.slice(0,1).toUpperCase();
     return '<div class="person-tag">'
-      + '<span style="width:20px;height:20px;border-radius:50%;background:rgba(160,78,31,0.2);color:#a04e1f;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">' + initials + '</span>'
-      + p
-      + '<button class="person-tag-remove" onclick="removePerson(' + i + ')">×</button>'
-      + '</div>';
+      +'<span style="width:20px;height:20px;border-radius:50%;background:rgba(160,78,31,0.2);color:#a04e1f;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">'+init+'</span>'
+      +p+'<button class="person-tag-remove" onclick="removePerson('+i+')">×</button></div>';
   }).join('');
-  var c = document.getElementById('people-count');
-  c.textContent = people.length > 0 ? '共 ' + people.length + ' 人' : '';
+  var c=document.getElementById('people-count');
+  c.textContent=people.length>0?t('countPeople')(people.length):'';
 }
 
+/* ---- EXPENSES ---- */
 function refreshExpUI() {
-  var payer = document.getElementById('epayer');
-  payer.innerHTML = people.map(function(p) {
-    return '<option value="' + p + '">' + p + '</option>';
-  }).join('');
-  splitSel = people.slice();
-  renderChips();
-  renderExpList();
+  document.getElementById('epayer').innerHTML=people.map(function(p){return '<option value="'+p+'">'+p+'</option>';}).join('');
+  splitSel=people.slice(); renderChips(); renderExpList();
 }
-
 function renderChips() {
-  document.getElementById('echips').innerHTML = people.map(function(p) {
-    var on = splitSel.indexOf(p) >= 0;
-    return '<div class="chip ' + (on ? 'on' : '') + '" onclick="toggleChip(\'' + p + '\')">' + p + '</div>';
+  document.getElementById('echips').innerHTML=people.map(function(p){
+    var on=splitSel.indexOf(p)>=0;
+    return '<div class="chip '+(on?'on':'')+'" onclick="toggleChip(\''+p+'\')">'+p+'</div>';
   }).join('');
 }
-
 function toggleChip(name) {
-  var idx = splitSel.indexOf(name);
-  if (idx >= 0) splitSel.splice(idx, 1);
-  else splitSel.push(name);
+  var idx=splitSel.indexOf(name);
+  if(idx>=0) splitSel.splice(idx,1); else splitSel.push(name);
   renderChips();
 }
-
 function addExpense() {
-  var desc = document.getElementById('edesc').value.trim();
-  var amt = parseFloat(document.getElementById('eamt').value);
-  var payer = document.getElementById('epayer').value;
-  if (!desc || isNaN(amt) || amt <= 0 || !payer) {
-    alert('请填写描述、金额并选择付款人');
-    return;
-  }
-  var sw = splitSel.length > 0 ? splitSel.slice() : people.slice();
-  expenses.push({ id: Date.now(), desc: desc, amount: amt, payer: payer, splitWith: sw });
-  document.getElementById('edesc').value = '';
-  document.getElementById('eamt').value = '';
-  splitSel = people.slice();
-  renderChips();
-  renderExpList();
+  var desc=document.getElementById('edesc').value.trim();
+  var amt=parseFloat(document.getElementById('eamt').value);
+  var payer=document.getElementById('epayer').value;
+  if(!desc||isNaN(amt)||amt<=0||!payer){alert(lang==='zh'?'请填写描述、金额并选择付款人':lang==='es'?'Por favor completa todos los campos':'Please fill in all fields');return;}
+  var sw=splitSel.length>0?splitSel.slice():people.slice();
+  expenses.push({id:Date.now(),desc:desc,amount:amt,payer:payer,splitWith:sw});
+  document.getElementById('edesc').value=''; document.getElementById('eamt').value='';
+  splitSel=people.slice(); renderChips(); renderExpList(); autoSave();
 }
-
 function removeExpense(id) {
-  expenses = expenses.filter(function(e) { return e.id !== id; });
-  renderExpList();
+  expenses=expenses.filter(function(e){return e.id!==id;});
+  renderExpList(); autoSave();
 }
-
 function renderExpList() {
-  var el = document.getElementById('elist');
-  var cnt = document.getElementById('exp-count');
-  cnt.textContent = expenses.length > 0 ? expenses.length + ' 笔' : '';
-  if (!expenses.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div>还没有账单，添加第一笔吧</div>';
-    return;
-  }
-  el.innerHTML = expenses.map(function(e) {
+  var el=document.getElementById('elist'), cnt=document.getElementById('exp-count');
+  cnt.textContent=expenses.length>0?t('countExp')(expenses.length):'';
+  if(!expenses.length){el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>'+t('noExpenses')+'</div>';return;}
+  el.innerHTML=expenses.map(function(e){
     return '<div class="expense-card">'
-      + '<div style="flex:1;min-width:0">'
-      + '<div class="expense-desc">' + e.desc + '</div>'
-      + '<div class="expense-meta"><span class="expense-payer">' + e.payer + '</span>付款 · 平摊给 ' + e.splitWith.join('、') + '</div>'
-      + '</div>'
-      + '<div class="expense-right">'
-      + '<div class="expense-amount">' + sym() + e.amount.toFixed(2) + '</div>'
-      + '<button class="btn-danger-sm" onclick="removeExpense(' + e.id + ')">删除</button>'
-      + '</div></div>';
+      +'<div style="flex:1;min-width:0"><div class="expense-desc">'+e.desc+'</div>'
+      +'<div class="expense-meta"><span class="expense-payer">'+e.payer+'</span>'+t('paidword')+' · '+t('splitword')+' '+e.splitWith.join(', ')+'</div></div>'
+      +'<div class="expense-right"><div class="expense-amount">'+sym()+e.amount.toFixed(2)+'</div>'
+      +'<button class="btn-danger-sm" onclick="removeExpense('+e.id+')">'+t('btndelete')+'</button>'
+      +'</div></div>';
   }).join('');
 }
 
+/* ---- SETTLE ---- */
 function computeBalances() {
-  var bal = {};
-  var paid = {};
-  people.forEach(function(p) { bal[p] = 0; paid[p] = 0; });
-  expenses.forEach(function(e) {
-    var share = e.amount / e.splitWith.length;
-    bal[e.payer] += e.amount;
-    paid[e.payer] += e.amount;
-    e.splitWith.forEach(function(p) { bal[p] -= share; });
+  var bal={},paid={};
+  people.forEach(function(p){bal[p]=0;paid[p]=0;});
+  expenses.forEach(function(e){
+    var share=e.amount/e.splitWith.length;
+    bal[e.payer]+=e.amount; paid[e.payer]+=e.amount;
+    e.splitWith.forEach(function(p){bal[p]-=share;});
   });
-  return { bal: bal, paid: paid };
+  return{bal:bal,paid:paid};
 }
-
 function renderSettle() {
-  if (!people.length) {
-    document.getElementById('stxn').innerHTML = '<div class="empty">请先添加成员</div>';
-    return;
-  }
-  var res = computeBalances();
-  var bal = res.bal;
-  var paid = res.paid;
-  var total = expenses.reduce(function(s, e) { return s + e.amount; }, 0);
-  var avg = people.length ? total / people.length : 0;
-
-  document.getElementById('sgrid').innerHTML =
-    '<div class="metric-card"><div class="metric-label">总支出</div><div class="metric-value">' + sym() + total.toFixed(2) + '</div></div>'
-  + '<div class="metric-card"><div class="metric-label">人均应付</div><div class="metric-value">' + sym() + avg.toFixed(2) + '</div></div>'
-  + '<div class="metric-card"><div class="metric-label">账单笔数</div><div class="metric-value">' + expenses.length + '</div></div>'
-  + '<div class="metric-card"><div class="metric-label">参与人数</div><div class="metric-value">' + people.length + '</div></div>';
-
-  document.getElementById('sbal').innerHTML = people.map(function(p) {
-    var b = bal[p];
-    var cls = b > 0.005 ? 'pos' : b < -0.005 ? 'neg' : 'zero';
-    var label = b > 0.005 ? '多付 ' + sym() + b.toFixed(2) : b < -0.005 ? '欠 ' + sym() + Math.abs(b).toFixed(2) : '已平衡';
-    var initials = p.slice(0,1).toUpperCase();
+  if(!people.length){document.getElementById('stxn').innerHTML='<div class="empty">'+t('noMembers')+'</div>';return;}
+  var res=computeBalances(),bal=res.bal,paid=res.paid;
+  var total=expenses.reduce(function(s,e){return s+e.amount;},0);
+  var avg=people.length?total/people.length:0;
+  document.getElementById('sgrid').innerHTML=
+    '<div class="metric-card"><div class="metric-label">'+t('metricTotal')+'</div><div class="metric-value">'+sym()+total.toFixed(2)+'</div></div>'
+   +'<div class="metric-card"><div class="metric-label">'+t('metricAvg')+'</div><div class="metric-value">'+sym()+avg.toFixed(2)+'</div></div>'
+   +'<div class="metric-card"><div class="metric-label">'+t('metricExp')+'</div><div class="metric-value">'+expenses.length+'</div></div>'
+   +'<div class="metric-card"><div class="metric-label">'+t('metricPeople')+'</div><div class="metric-value">'+people.length+'</div></div>';
+  document.getElementById('sbal').innerHTML=people.map(function(p){
+    var b=bal[p],cls=b>0.005?'pos':b<-0.005?'neg':'zero';
+    var label=b>0.005?t('overpaid')+' '+sym()+b.toFixed(2):b<-0.005?t('owes')+' '+sym()+Math.abs(b).toFixed(2):t('balanced');
+    var init=p.slice(0,1).toUpperCase();
     return '<div class="balance-item">'
-      + '<div style="display:flex;align-items:center;gap:10px">'
-      + '<div class="avatar">' + initials + '</div>'
-      + '<div><div class="balance-name">' + p + '</div><div class="balance-paid">实付 ' + sym() + (paid[p]||0).toFixed(2) + '</div></div>'
-      + '</div>'
-      + '<div style="display:flex;align-items:center">'
-      + '<span class="balance-val ' + cls + '">' + label + '</span>'
-      + '</div></div>';
+      +'<div style="display:flex;align-items:center;gap:10px"><div class="avatar">'+init+'</div>'
+      +'<div><div class="balance-name">'+p+'</div><div class="balance-paid">'+t('actualPaid')+' '+sym()+(paid[p]||0).toFixed(2)+'</div></div></div>'
+      +'<span class="balance-val '+cls+'">'+label+'</span></div>';
   }).join('');
-
-  var credits = [], debits = [];
-  people.forEach(function(p) {
-    var b = parseFloat(bal[p].toFixed(2));
-    if (b > 0.005) credits.push({ name: p, amt: b });
-    else if (b < -0.005) debits.push({ name: p, amt: -b });
+  var credits=[],debits=[];
+  people.forEach(function(p){
+    var b=parseFloat(bal[p].toFixed(2));
+    if(b>0.005) credits.push({name:p,amt:b}); else if(b<-0.005) debits.push({name:p,amt:-b});
   });
-  credits.sort(function(a, b) { return b.amt - a.amt; });
-  debits.sort(function(a, b) { return b.amt - a.amt; });
-
-  var txns = [], i = 0, j = 0;
-  while (i < credits.length && j < debits.length) {
-    var c = credits[i], d = debits[j];
-    var min = Math.min(c.amt, d.amt);
-    txns.push({ from: d.name, to: c.name, amt: min });
-    c.amt -= min; d.amt -= min;
-    if (c.amt < 0.01) i++;
-    if (d.amt < 0.01) j++;
+  credits.sort(function(a,b){return b.amt-a.amt;}); debits.sort(function(a,b){return b.amt-a.amt;});
+  var txns=[],i=0,j=0;
+  while(i<credits.length&&j<debits.length){
+    var c=credits[i],d=debits[j],min=Math.min(c.amt,d.amt);
+    txns.push({from:d.name,to:c.name,amt:min});
+    c.amt-=min; d.amt-=min;
+    if(c.amt<0.01) i++; if(d.amt<0.01) j++;
   }
-
-  var sel = document.getElementById('stxn');
-  if (!txns.length) {
-    sel.innerHTML = '<div class="empty"><div class="empty-icon">✅</div>无需转账，大家已经平衡了！</div>';
-    return;
-  }
-  sel.innerHTML = txns.map(function(t) {
-    var fi = t.from.slice(0,1).toUpperCase();
-    var ti = t.to.slice(0,1).toUpperCase();
+  var sel=document.getElementById('stxn');
+  if(!txns.length){sel.innerHTML='<div class="empty"><div class="empty-icon">✅</div>'+t('noSettle')+'</div>';return;}
+  sel.innerHTML=txns.map(function(tx){
+    var fi=tx.from.slice(0,1).toUpperCase(),ti=tx.to.slice(0,1).toUpperCase();
     return '<div class="transfer-card">'
-      + '<div style="display:flex;align-items:center;gap:10px">'
-      + '<div class="avatar">' + fi + '</div>'
-      + '<div class="transfer-names">'
-      + '<span class="transfer-from">' + t.from + '</span>'
-      + '<span class="transfer-arrow"> → </span>'
-      + '<span class="transfer-to">' + t.to + '</span>'
-      + '</div>'
-      + '<div class="avatar" style="background:#e6f3ec;color:#2a7a4a">' + ti + '</div>'
-      + '</div>'
-      + '<div class="transfer-amount">' + sym() + t.amt.toFixed(2) + '</div>'
-      + '</div>';
+      +'<div style="display:flex;align-items:center;gap:10px"><div class="avatar">'+fi+'</div>'
+      +'<div style="font-size:15px"><span class="transfer-from">'+tx.from+'</span>'
+      +'<span class="transfer-arrow"> → </span><span class="transfer-to">'+tx.to+'</span></div>'
+      +'<div class="avatar" style="background:#e6f3ec;color:#2a7a4a">'+ti+'</div></div>'
+      +'<div class="transfer-amount">'+sym()+tx.amt.toFixed(2)+'</div></div>';
   }).join('');
 }
 
+/* ---- HISTORY (localStorage) ---- */
+function getSessions() {
+  try { return JSON.parse(localStorage.getItem('splitbill_sessions')||'[]'); } catch(e){ return []; }
+}
+function saveSessions(sessions) {
+  try { localStorage.setItem('splitbill_sessions',JSON.stringify(sessions)); } catch(e){}
+}
+
+function autoSave() {
+  if(!currentSessionId) return;
+  var sessions=getSessions();
+  var idx=sessions.findIndex(function(s){return s.id===currentSessionId;});
+  if(idx<0) return;
+  sessions[idx].people=people.slice();
+  sessions[idx].expenses=JSON.parse(JSON.stringify(expenses));
+  sessions[idx].currency=currency;
+  sessions[idx].updatedAt=Date.now();
+  saveSessions(sessions);
+}
+
+function saveCurrentSession(showModal) {
+  if(showModal) {
+    var sessions=getSessions();
+    var existing=currentSessionId?sessions.find(function(s){return s.id===currentSessionId;}):null;
+    document.getElementById('session-name-input').value=existing?existing.name:'';
+    document.getElementById('name-modal').style.display='flex';
+    document.getElementById('session-name-input').focus();
+  }
+}
+
+function confirmSave() {
+  var name=document.getElementById('session-name-input').value.trim();
+  if(!name) name='Session '+new Date().toLocaleDateString();
+  var sessions=getSessions();
+  if(currentSessionId) {
+    var idx=sessions.findIndex(function(s){return s.id===currentSessionId;});
+    if(idx>=0){
+      sessions[idx].name=name; sessions[idx].people=people.slice();
+      sessions[idx].expenses=JSON.parse(JSON.stringify(expenses));
+      sessions[idx].currency=currency; sessions[idx].updatedAt=Date.now();
+    } else { pushNewSession(sessions,name); }
+  } else { pushNewSession(sessions,name); }
+  saveSessions(sessions);
+  closeModal();
+  showSaveBanner();
+}
+
+function pushNewSession(sessions,name) {
+  currentSessionId=Date.now().toString();
+  sessions.push({id:currentSessionId,name:name,people:people.slice(),
+    expenses:JSON.parse(JSON.stringify(expenses)),currency:currency,
+    createdAt:Date.now(),updatedAt:Date.now()});
+}
+
+function closeModal() { document.getElementById('name-modal').style.display='none'; }
+
+function showSaveBanner() {
+  var b=document.getElementById('save-banner');
+  document.getElementById('save-banner-text').textContent=t('savedBanner');
+  b.style.display='flex';
+  setTimeout(function(){b.style.display='none';},2500);
+}
+
+function newSession() {
+  people=[]; expenses=[]; splitSel=[]; currentSessionId=null;
+  renderPeople(); renderExpList();
+  switchTab('people');
+}
+
+function loadSession(id) {
+  var sessions=getSessions();
+  var s=sessions.find(function(x){return x.id===id;});
+  if(!s) return;
+  currentSessionId=s.id;
+  people=s.people.slice();
+  expenses=JSON.parse(JSON.stringify(s.expenses));
+  currency=s.currency||'USD';
+  ['CNY','USD','EUR'].forEach(function(x){document.getElementById('btn-'+x.toLowerCase()).classList.toggle('active',x===currency);});
+  splitSel=people.slice();
+  renderPeople(); renderExpList();
+  switchTab('people');
+}
+
+function deleteSession(id) {
+  var sessions=getSessions().filter(function(s){return s.id!==id;});
+  saveSessions(sessions);
+  if(currentSessionId===id){currentSessionId=null;}
+  renderHistory();
+}
+
+function renderHistory() {
+  var sessions=getSessions();
+  var q=(document.getElementById('hist-search').value||'').trim().toLowerCase();
+  if(q) sessions=sessions.filter(function(s){return s.name.toLowerCase().indexOf(q)>=0||s.people.join(' ').toLowerCase().indexOf(q)>=0;});
+  sessions.sort(function(a,b){return b.updatedAt-a.updatedAt;});
+  var el=document.getElementById('history-list');
+  if(!sessions.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon">📋</div>'+t('noHistory')+'</div>';return;
+  }
+  el.innerHTML=sessions.map(function(s){
+    var total=s.expenses.reduce(function(sum,e){return sum+e.amount;},0);
+    var sym2=s.currency==='CNY'?'¥':s.currency==='EUR'?'€':'$';
+    var date=new Date(s.updatedAt).toLocaleDateString();
+    var peopleTags=s.people.map(function(p){return '<span class="tag-mini">'+p+'</span>';}).join('');
+    return '<div class="session-card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+      +'<div class="session-name">'+s.name+'</div>'
+      +'<div style="font-size:18px;font-weight:600;font-family:DM Mono,monospace;color:#2a7a4a">'+sym2+total.toFixed(2)+'</div>'
+      +'</div>'
+      +'<div class="session-meta">'
+      +'<span>📅 '+date+'</span>'
+      +'<span>👥 '+s.people.length+'</span>'
+      +'<span>🧾 '+s.expenses.length+'</span>'
+      +'</div>'
+      +'<div class="tag-people">'+peopleTags+'</div>'
+      +'<div class="session-actions">'
+      +'<button class="btn btn-primary" onclick="loadSession(\''+s.id+'\')" style="height:32px;font-size:13px;padding:0 12px">'+t('btnResume')+'</button>'
+      +'<button class="btn-danger-sm" onclick="event.stopPropagation();deleteSession(\''+s.id+'\')">'+t('btnDelete')+'</button>'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+/* ---- INIT ---- */
 setCurrency('USD');
+setLang('en');
+switchTab('people');
 </script>
 </body>
 </html>
